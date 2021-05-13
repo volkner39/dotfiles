@@ -1,0 +1,5 @@
+#!/bin/sh
+
+val="$(cat /home/kesari/.config/brightness | cut -d'.' -f1)"
+
+echo ✨ $val

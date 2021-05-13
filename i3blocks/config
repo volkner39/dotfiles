@@ -1,0 +1,62 @@
+#command=~/.config/i3blocks/i3blocks-contrib/$BLOCK_NAME/$BLOCK_NAME
+command=~/.config/i3blocks/$BLOCK_NAME
+seperator_block_width=15
+markup=pango
+align=center
+
+# /home hdd space available
+[hdd]
+interval=once
+
+# cpu temperature
+[cpu]
+interval=60
+
+# memory
+[memory]
+interval=60
+
+# Query my IP on startup
+[wifi]
+interval=7200
+
+# volume
+[volume]
+interval=once
+signal=3
+
+# screen brightness
+[brightness]
+interval=once
+signal=10
+
+# Battery info
+[battery]
+interval=30
+
+# Guess the weather hourly
+[weather]
+interval=900
+color=#A4C2F4
+
+# Update time
+[date]
+interval=60
+
+
+
+# news -> rss
+# mail -> mutt
+# music
+# battery -> acpi
+# wifi - ip - vpn
+# torrent -> transmission
+# weather -> wttr.in
+# crypto
+# hdd
+# memory
+# temp
+# cpu usage
+# volume
+# screen brightness
+# date - time

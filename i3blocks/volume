@@ -1,0 +1,5 @@
+#!/bin/sh
+
+volume="$(pulsemixer --get-volume | awk '{print $1}')"
+
+echo 🔊 $volume

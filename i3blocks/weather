@@ -1,0 +1,98 @@
+#!/bin/sh
+
+XML="$(curl https://www.yr.no/place/Canada/Ontario/Scarborough/forecast.xml)"
+#echo "${XML}"
+
+
+time_of_day="day"
+
+# Get the latest weather values
+sun="$(grep "sun rise" <<< "${XML}" | head -1)"
+pressure="$(grep "pressure" <<< "${XML}" | head -1)"
+precipitation="$(grep "precipitation" <<< "${XML}" | head -1)"
+symbol="$(grep "symbol" <<< "${XML}" | head -1)"
+wind_speed="$(grep "windSpeed" <<< "${XML}" | head -1)"
+wind_direction="$(grep "windDirection" <<< "${XML}" | head -1)"
+temperature="$(grep "temperature" <<< "${XML}" | head -1)"
+
+
+
+# Parse the name and value seperately
+sunrise_value="$(grep -oP 'rise="\K[^"\047]+(?=["\047])' <<< ${sun})"
+sunset_value="$(grep -oP 'set="\K[^"\047]+(?=["\047])' <<< ${sun})"
+
+pressure_value="$(grep -oP 'value="\K[^"\047]+(?=["\047])' <<< ${pressure})"
+pressure_unit="$(grep -oP 'unit="\K[^"\047]+(?=["\047])' <<< ${pressure})"
+
+precipitation_value="$(grep -oP 'value="\K[^"\047]+(?=["\047])' <<< ${precipitation})"
+
+symbol_name="$(grep -oP 'name="\K[^"\047]+(?=["\047])' <<< ${symbol})"
+
+wind_speed_name="$(grep -oP 'name="\K[^"\047]+(?=["\047])' <<< ${wind_speed})"
+wind_speed_mps="$(grep -oP 'mps="\K[^"\047]+(?=["\047])' <<< ${wind_speed})"
+
+wind_direction_name="$(grep -oP 'name="\K[^"\047]+(?=["\047])' <<< ${wind_direction})"
+wind_direction_degree="$(grep -oP 'deg="\K[^"\047]+(?=["\047])' <<< ${wind_direction})"
+
+temperature_value="$(grep -oP 'value="\K[^"\047]+(?=["\047])' <<< ${temperature})"
+temperature_unit="$(grep -oP 'unit="\K[^"\047]+(?=["\047])' <<< ${temperature})"
+
+
+# Write out the values
+current_time="$(date --iso-8601=seconds)"
+convert_current_time=$(date -d"${current_time}" +%s)
+
+convert_sunrise_time=$(date -d"${sunrise_value}" +%s)
+convert_sunset_time=$(date -d"${sunset_value}" +%s)
+
+if [ $convert_current_time -lt $convert_sunrise_time ] || [ $convert_sunset_time -lt $convert_current_time ] ;
+then
+time_of_day="Night"
+else
+time_of_day="Day"
+fi
+
+#echo $symbol_name
+#echo $wind_speed_name
+#echo $wind_speed_mps
+
+#echo $wind_direction_name
+#echo $wind_direction_degree
+
+case "${symbol_name}" in
+	"Fair")                if [ "${time_of_day}" == "Day" ] ; then echo "☀️"  ; else echo "🌙"  ; fi ;;
+	"Partly cloudy")       if [ "${time_of_day}" == "Day" ] ; then echo "⛅" ; else echo "⛅"  ; fi ;;
+	"Clear sky")           if [ "${time_of_day}" == "Day" ] ; then echo "☀️"  ; else echo "🌙"  ; fi ;;
+	"Cloudy")              if [ "${time_of_day}" == "Day" ] ; then echo "☁️"  ; else echo "☁️"   ; fi ;;
+	"Light rain")          if [ "${time_of_day}" == "Day" ] ; then echo "🌧️" ; else echo "🌧️"  ; fi ;;
+	"Rain")                if [ "${time_of_day}" == "Day" ] ; then echo "🌧️" ; else echo "🌧️"  ; fi ;;
+	"Rain showers")        if [ "${time_of_day}" == "Day" ] ; then echo "🌧️" ; else echo "🌧️"  ; fi ;;
+	"Light rain showers")  if [ "${time_of_day}" == "Day" ] ; then echo "🌧️" ; else echo "🌧️"  ; fi ;;
+	"Heavy Rain")          if [ "${time_of_day}" == "Day" ] ; then echo "🌧️" ; else echo "🌧️"  ; fi ;;
+	"Light snow")          if [ "${time_of_day}" == "Day" ] ; then echo "🌨️" ; else echo "🌨️"  ; fi ;;
+	"Snow")                if [ "${time_of_day}" == "Day" ] ; then echo "🌨️" ; else echo "🌨️"  ; fi ;;
+	"Heavy snow")          if [ "${time_of_day}" == "Day" ] ; then echo "🌨️" ; else echo "🌨️"  ; fi ;;
+	"Foggy")               if [ "${time_of_day}" == "Day" ] ; then echo "🌫️" ; else echo "🌫️"  ; fi ;;
+	"Fog")                 if [ "${time_of_day}" == "Day" ] ; then echo "🌫️" ; else echo "🌫️"  ; fi ;;
+	"Light snow showers")  if [ "${time_of_day}" == "Day" ] ; then echo "🌨️" ; else echo "🌨️"  ; fi ;;
+	*)                   echo "Unknown Symbol"
+
+esac
+
+
+case $BLOCK_BUTTON in
+    1) notify-send "Weather" "$time_of_day - $symbol_name\n🌡️ $temperature_value $temperature_unit\n🌊 $precipitation_value\n🏭 $pressure_value $pressure_unit\n🌀 $wind_speed_name $wind_speed_mps mps\n🧭 $wind_direction_name $wind_direction_degree" ;;
+esac
+
+
+#echo "${pressure_value}" "${pressure_unit}"
+
+#echo "${precipitation_value}" "mm"
+
+#echo "${symbol_name}"
+
+#echo "${wind_speed_name}" "${wind_speed_mps}"
+
+#echo "${wind_direction_name}" "${wind_direction_degree}"
+
+#echo "${temperature_value}" "${temperature_unit}"

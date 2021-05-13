@@ -1,0 +1,16 @@
+#!/bin/sh
+
+test_site="ifconfig.me"
+
+# test connectivity
+ping_result="$(ping -c 1 "${test_site}" | grep " 0% packet loss")"
+
+# get private ip
+private_ip="$(hostname -i | awk '{ print "IP:" $1 }')"
+
+# get public ip
+public_ip="$(curl "${test_site}")"
+
+# if not connected, show red private ip
+# if connected, show green public ip
+if [ "${ping_result}" == "" ] ; then echo -e "<span color='red'>"🌐 ${private_ip}"</span>" ; else echo -e "<span color='#91E78B'>"🌐 ${public_ip}"</span>" ; fi

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case $BLOCK_BUTTON in
+	1) notify-send "CPU" "$(ps axch -o cmd,pid,%cpu --sort=-%cpu | head)" ;;
+esac
+
+cpu_temp="$(sensors | awk '/Core 0/ {print "🔥 " $3}' | sed 's/+//' | cut -d'.' -f1)"
+
+echo $cpu_temp'°C'
+
+# Set urgent flag above 85 celsius
+[ ${cpu_temp} -ge 80 ] && exit 33
+
+exit 0
